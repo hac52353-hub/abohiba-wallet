@@ -1,23 +1,33 @@
 # ABOHIBA Web3
 
-A single-page Arabic RTL interface for connecting MetaMask to the deployed Ethereum contract and reading its `owner()` value.
+صفحة عربية متجاوبة (RTL) للاتصال بمحفظة متصفح وقراءة عنوان مالك عقد Ethereum.
 
-## Contract
-- Network: Ethereum Mainnet (chain ID 1)
-- Address: `0xC8e465edb4c9e63be7c7d9f28467f544256ce1f1`
+## العقد
 
-## Current scope
-- Connects to an injected wallet (MetaMask).
-- Checks Ethereum Mainnet before enabling read interactions.
-- Reads `owner()` only.
-- Links to the contract on Etherscan.
-- Does not request token approvals or send transactions.
-- `pullBalance(address,address)` is intentionally not exposed until the verified contract logic and authorization model are reviewed.
+- الشبكة: Ethereum Mainnet
+- Chain ID: `1`
+- العنوان: `0xC8e465edb4c9e63be7c7d9f28467f544256ce1f1`
+- Etherscan: https://etherscan.io/address/0xC8e465edb4c9e63be7c7d9f28467f544256ce1f1
 
-## Publish with GitHub Pages
-1. Open repository Settings → Pages.
-2. Under Build and deployment, choose Deploy from a branch.
-3. Select `main` and `/(root)`, then Save.
-4. Wait for GitHub Pages to publish the site. The URL will appear in Settings → Pages.
+## الميزات
 
-The page loads ethers.js from jsDelivr, so an internet connection is required. This interface is not a security audit of the deployed contract. Never enter a seed phrase or private key into the site.
+- ربط محفظة متوافقة مع واجهة EIP-1193 مثل MetaMask.
+- عرض عنوان الحساب والشبكة، مع التحقق من Chain ID قبل قراءة العقد.
+- التحقق من وجود bytecode للعقد على Ethereum Mainnet قبل استدعاء `owner()`.
+- قراءة `owner()` عبر المحفظة المتصلة أو RPC عام عند عدم الاتصال. القراءة لا تحتاج توقيعًا أو رسوم غاز.
+- إظهار رسائل مفهومة لأخطاء الشبكة والاتصال، وتحديث الواجهة عند تغيير الحساب أو الشبكة.
+- لا توجد عبارة استرداد أو مفاتيح خاصة أو مفاتيح API في الموقع.
+
+## حدود أمان مقصودة
+
+لا تعرض الواجهة `pullBalance(address,address)` ولا تطلب موافقات ERC-20. فحص RPC على Ethereum Mainnet أكد وجود bytecode وأن `owner()` تستجيب. يحتوي الـbytecode على شرط `msg.sender == owner` واستدعاءات `balanceOf` و`transferFrom` ورسائل تشير إلى ضرورة الموافقة. هذا يعني أن مالك العقد يمكنه محاولة نقل توكنات من محافظ وافقت للعقد. لم أتمكن من العثور على مصدر Solidity موثق عبر Sourcify، لذلك لم أتحقق من وجهة التحويل كاملة، ولم أضف واجهة للمعاملة.
+
+يدعم الموقع المحافظ المحقونة في المتصفح حاليًا. إضافة WalletConnect عبر Reown تحتاج `projectId` من إعداد Reown الخاص بمالك المشروع؛ لم يُضمّن معرّف تخميني أو سر في مستودع عام.
+
+## النشر على GitHub Pages
+
+من إعدادات المستودع افتح **Settings → Pages**، واختر **Deploy from a branch** ثم الفرع `main` والمجلد `/(root)`. بعد الحفظ، انتظر نجاح نشر GitHub Pages. عادة يكون الرابط `https://hac52353-hub.github.io/abohiba-wallet/`، لكن لا يُعد متاحًا قبل التحقق من إعداد Pages وفتح الرابط بنجاح.
+
+## الاعتماديات
+
+يحمّل `ethers.js` إصدار `6.13.5` من jsDelivr. يلزم اتصال بالإنترنت لتحميل المكتبة وRPC العام عند القراءة من دون محفظة.
