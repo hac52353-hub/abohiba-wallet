@@ -6,18 +6,26 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "verify:tokens": "node scripts/verify-tokens.mjs"
   },
   "dependencies": {
+    "@fontsource/ibm-plex-sans-arabic": "5.2.8",
     "@reown/appkit": "1.8.24",
+    "@reown/appkit-adapter-solana": "1.8.24",
+    "@reown/appkit-adapter-tron": "1.8.24",
     "@reown/appkit-adapter-wagmi": "1.8.24",
-    "@wagmi/connectors": "6.2.0",
-    "@wagmi/core": "2.22.1",
+    "@tanstack/query-core": "5.104.5",
+    "@tronweb3/tronwallet-adapter-metamask-tron": "1.0.1",
+    "@tronweb3/tronwallet-adapter-okxwallet": "1.0.7",
+    "@tronweb3/tronwallet-adapter-tronlink": "1.1.13",
+    "@tronweb3/tronwallet-adapter-trust": "1.0.2",
+    "@wagmi/connectors": "8.2.2",
+    "@wagmi/core": "3.6.7",
     "viem": "2.57.11",
-    "wagmi": "2.19.5"
+    "wagmi": "3.7.9"
   },
   "devDependencies": {
     "vite": "6.3.5"
   }
 }
-

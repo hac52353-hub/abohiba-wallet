@@ -1,38 +1,51 @@
 # NEXORA — Multi-Chain Portfolio
 
-واجهة عربية متجاوبة لربط المحافظ عبر Reown AppKit وWalletConnect وقراءة العناوين والأرصدة فقط. اسم المنتج هو Multi-Chain Portfolio؛ التنفيذ الحالي يقرأ Ethereum Mainnet فقط ولا يعرض شبكات أخرى كمدعومة.
+Read-only multi-chain wallet view. The user picks a network, presses **إظهار العنوان / Show address**, connects a wallet
+(Trust Wallet, MetaMask, OKX, Phantom, TronLink and any WalletConnect wallet) and sees their **public address** and
+**real on-chain balances**. Arabic (RTL) and English.
 
-## الوظائف الحالية
+Live site: https://hac52353-hub.github.io/abohiba-wallet/
 
-- اختيار محفظة من AppKit، مع دعم WalletConnect للمحافظ على الهاتف مثل Trust Wallet وMetaMask، ومحافظ المتصفح المتوافقة.
-- إظهار حالة الاتصال وعنوان الحساب والشبكة الحالية، مع زري الربط والفصل.
-- قراءة ETH وUSDC وUSDT وDAI على Ethereum Mainnet (Chain ID 1) فقط.
-- لا توجد وظائف إرسال أو تحويل أو سحب، ولا موافقات توكن، ولا توقيع رسائل أو معاملات.
-- لا يطلب الموقع عبارة استرداد أو مفتاحًا خاصًا.
+## What it does and does not do
 
-## إعداد Reown
+| Does | Does not |
+| --- | --- |
+| Connect a wallet through Reown AppKit / WalletConnect | Ask for a recovery phrase, private key or password |
+| Show the public address for the selected network, with copy button | Request signatures, transactions or token approvals |
+| Read balances from public RPC / TronGrid endpoints | Call any smart contract that moves funds |
+| Ask the wallet (official `wallet_switchEthereumChain`) to change EVM network, then verify it | Show demo balances, invented prices or fake addresses |
 
-يستخدم التطبيق Project ID الذي زوّده مالك المشروع في `src/main.js`. هذا المعرّف عام ومطلوب لتشغيل WalletConnect، وليس مفتاح محفظة أو سرًا. إذا كانت قائمة النطاقات المسموحة مفعّلة في لوحة Reown، أضف أصل الموقع:
+Swap and Send are **not enabled**. They are shown as disabled and execute nothing. They are planned as separate phases that
+must display network, recipient and fees and require explicit user approval.
 
-`https://hac52353-hub.github.io`
+## Networks and how each is really supported
 
-ويجب أن يتطابق `url` في بيانات AppKit مع أصل الموقع المنشور.
+| Network | Standard | Connector | Balance source |
+| --- | --- | --- | --- |
+| Ethereum, BNB Smart Chain, Polygon, Arbitrum, Optimism, Base | ERC20 / BEP20 | Reown Wagmi adapter (`eip155`) | publicnode RPC with fallback |
+| Solana | SPL | Reown Solana adapter (`solana`) | publicnode / mainnet-beta RPC |
+| TRON | TRC20 | Reown TRON adapter (`tron`) + TronLink, Trust, OKX, MetaMask-TRON adapters | TronGrid |
 
-## التطوير والبناء
+Address formats are different and are validated before display (EIP-55 for EVM, base58 32 bytes for Solana,
+base58check `0x41` for TRON). An address from one namespace is never displayed for another.
 
-```sh
-npm ci --legacy-peer-deps
+Root cause of the earlier Ethereum-only behaviour: AppKit was created with `networks = [mainnet]` and only the Wagmi (EVM)
+adapter. Without the Solana and TRON adapters and their networks, no non-EVM connection could ever be offered.
+
+## Develop
+
+```bash
+npm ci --legacy-peer-deps      # AppKit pins exact peer versions for the TRON wallet adapters
 npm run dev
 npm run build
+npm run verify:tokens          # checks every token in src/networks.js on-chain
 ```
 
-ينتج البناء الموقع داخل `dist/`. سير عمل GitHub Actions في `.github/workflows/pages.yml` يبني الموقع وينشره إلى GitHub Pages عند تحديث فرع `main`. إعداد Vite يستخدم مسارات نسبية صالحة للمشروع المنشور تحت `/abohiba-wallet/`.
+Configuration lives in `src/networks.js` (networks, tokens) and `src/wallet.js` (AppKit). See `.env.example`.
 
-## الأصول المقروءة
+## Deploy
 
-- ETH: الرصيد الأصلي على Ethereum Mainnet.
-- USDC: `0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48`
-- USDT: `0xdAC17F958D2ee523a2206206994597C13D831ec7`
-- DAI: `0x6B175474E89094C44Da98b954EedeAC495271d0F`
+GitHub Actions (`.github/workflows/pages.yml`) builds with Vite and publishes `dist/` to GitHub Pages on every push to `main`.
+In *Settings → Pages* the source must be **GitHub Actions**.
 
-تُستخدم عناوين ERC-20 لاستدعاءات `balanceOf` للقراءة فقط. يلزم اتصال بالإنترنت ومزود Ethereum عام لقراءة الأرصدة. لا تُعرض شبكات أخرى على أنها مدعومة حاليًا.
+See [SECURITY.md](SECURITY.md) for the security review and the Google Safe Browsing procedure.
