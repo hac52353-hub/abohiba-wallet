@@ -1,0 +1,23 @@
+{
+  "name": "abohiba-wallet",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@reown/appkit": "1.8.24",
+    "@reown/appkit-adapter-wagmi": "1.8.24",
+    "@wagmi/connectors": "6.2.0",
+    "@wagmi/core": "2.22.1",
+    "viem": "2.57.11",
+    "wagmi": "2.19.5"
+  },
+  "devDependencies": {
+    "vite": "6.3.5"
+  }
+}
+

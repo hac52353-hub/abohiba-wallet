@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1020">
+  <meta name="description" content="ABOHIBA — ربط محفظتك وقراءة عنوانها وأرصدة Ethereum المدعومة فقط.">
+  <title>ABOHIBA | ربط المحفظة</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0b1020;--panel:#121a2e;--line:#273452;--text:#eef3ff;--muted:#a8b4ce;--accent:#8b7cff;--green:#39d9a5;--red:#ff9c9c}
+    *{box-sizing:border-box}body{margin:0;min-width:320px;background:radial-gradient(circle at 15% 0,#22234a 0,transparent 35%),var(--bg);color:var(--text);font:16px system-ui,-apple-system,"Segoe UI",sans-serif}
+    main{max-width:900px;margin:auto;padding:24px 16px 56px}.top,.row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.top{margin-bottom:28px}.brand{font-size:22px;font-weight:800;letter-spacing:.5px}.pill{border:1px solid var(--line);border-radius:999px;padding:7px 12px;color:var(--muted);font-size:13px}
+    h1{font-size:clamp(29px,7vw,44px);line-height:1.25;margin:14px 0}h2{font-size:21px;margin:0 0 10px}p{color:var(--muted);line-height:1.8}.panel{background:rgba(18,26,46,.92);border:1px solid var(--line);border-radius:20px;padding:22px;margin:16px 0;box-shadow:0 14px 50px #0002}.btn{border:0;border-radius:12px;background:var(--accent);color:white;padding:12px 18px;font:inherit;font-weight:750;cursor:pointer}.btn.secondary{background:#202b45;border:1px solid var(--line)}.btn:disabled{opacity:.5;cursor:not-allowed}.label{color:var(--muted);font-size:13px;margin-bottom:7px}.value{overflow-wrap:anywhere;font-family:ui-monospace,Consolas,monospace;font-size:14px;direction:ltr;text-align:right}.status{margin-top:14px;padding:12px;border-radius:12px;background:#0b1427;color:var(--muted);line-height:1.7}.ok{color:var(--green)}.error{color:var(--red)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.balance-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}.balance{min-width:0;background:#0b1427;border:1px solid var(--line);border-radius:14px;padding:14px}.small{font-size:13px;color:var(--muted)}a{color:#c7bdff}button:focus-visible,a:focus-visible{outline:3px solid #d2ff65;outline-offset:3px}
+    @media(max-width:600px){main{padding:18px 13px 40px}.panel{padding:17px}.grid,.balance-grid{grid-template-columns:1fr}.top{align-items:flex-start}.btn{width:100%;min-height:48px}.row>.actions{display:grid;width:100%;grid-template-columns:1fr;gap:10px}}
+  </style>
+</head>
+<body>
+  <main>
+    <header class="top"><div class="brand">ABOHIBA <span style="color:var(--accent)">WEB3</span></div><div class="pill">محافظ Ethereum · قراءة فقط</div></header>
+    <section>
+      <div class="pill">خصوصيتك وأصولك تحت سيطرتك</div>
+      <h1>اربط محفظتك، واعرض أرصدتك بوضوح</h1>
+      <p>اختر محفظتك من القائمة الآمنة. هذا الموقع يقرأ عنوان المحفظة ورصيد ETH وبعض توكنات Ethereum الشائعة فقط؛ لا يرسل معاملات ولا يطلب موافقات أو توقيعات.</p>
+    </section>
+    <section class="panel" aria-labelledby="walletHeading">
+      <h2 id="walletHeading">المحفظة</h2>
+      <div class="row">
+        <div><div class="label">حالة الاتصال</div><div id="walletState" aria-live="polite">غير متصل</div></div>
+        <div class="actions row"><button class="btn" id="connectBtn" type="button">ربط المحفظة</button><button class="btn secondary" id="disconnectBtn" type="button" hidden>فصل المحفظة</button></div>
+      </div>
+      <div class="grid" style="margin-top:20px">
+        <div><div class="label">عنوان المحفظة</div><div class="value" id="account">—</div></div>
+        <div><div class="label">الشبكة الحالية</div><div id="networkState">—</div></div>
+      </div>
+      <div class="status" id="status" role="status">الاتصال اختياري، ويمكنك فصله في أي وقت. لا تدخل عبارة الاسترداد أو المفتاح الخاص في هذا الموقع.</div>
+    </section>
+    <section class="panel" aria-labelledby="balancesHeading">
+      <div class="row"><div><h2 id="balancesHeading">الأرصدة المقروءة</h2><p class="small">قراءة عامة من Ethereum Mainnet. لا تتطلب أي توقيع أو رسوم شبكة.</p></div><button class="btn secondary" id="refreshBtn" type="button" disabled>تحديث الأرصدة</button></div>
+      <div class="balance-grid" id="balanceGrid">
+        <div class="balance"><div class="label">Ethereum</div><div class="value" id="ethBalance">— ETH</div></div>
+        <div class="balance"><div class="label">USD Coin</div><div class="value" id="usdcBalance">— USDC</div></div>
+        <div class="balance"><div class="label">Tether USD</div><div class="value" id="usdtBalance">— USDT</div></div>
+        <div class="balance"><div class="label">Dai</div><div class="value" id="daiBalance">— DAI</div></div>
+      </div>
+      <div class="status" id="balanceStatus" role="status">اربط محفظتك لعرض الأرصدة المدعومة.</div>
+    </section>
+    <section class="panel">
+      <h2>ما الذي يفعله الموقع؟</h2>
+      <p>يستخدم Reown AppKit وWalletConnect لعرض المحافظ المتوافقة مثل Trust Wallet وMetaMask. عند الاتصال، نقرأ عنوانك ورصيد ETH وUSDC وUSDT وDAI على Ethereum Mainnet. يمكنك رفض الاتصال أو فصل المحفظة في أي وقت.</p>
+      <p class="small">لا يحتوي الموقع على وظائف تحويل أو سحب أو موافقات توكنات أو توقيع رسائل أو معاملات. عناوين التوكنات مخصصة للقراءة فقط.</p>
+    </section>
+    <footer class="small" style="text-align:center;margin-top:24px">ABOHIBA · ربط وقراءة فقط · لا تطلب عبارة استرداد أو مفتاحًا خاصًا</footer>
+  </main>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
+
