@@ -1,4 +1,4 @@
-name: Deploy ABOHIBA to GitHub Pages
+name: Deploy NEXORA to GitHub Pages
 
 on:
   push:

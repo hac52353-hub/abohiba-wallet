@@ -4,8 +4,8 @@ import { getAccount, watchAccount, watchChainId } from '@wagmi/core'
 
 const projectId = '8afb2c1ca4d2aa9fb5f92b49880291b6'
 const metadata = {
-  name: 'ABOHIBA Wallet',
-  description: 'ربط محفظة وقراءة الأرصدة فقط',
+  name: 'NEXORA — Multi-Chain Portfolio',
+  description: 'ربط المحفظة وقراءة الأرصدة فقط على Ethereum Mainnet',
   url: 'https://hac52353-hub.github.io',
   icons: ['https://hac52353-hub.github.io/abohiba-wallet/favicon.svg']
 }
@@ -63,6 +63,7 @@ async function initializeWalletKit() {
 
       watchAccount(config, {
         onChange(account) {
+          refreshSequence += 1
           renderConnection()
           if (account.isConnected) {
             setStatus('تم ربط المحفظة. الموقع يقرأ العنوان والأرصدة فقط.', 'ok')
@@ -109,7 +110,8 @@ function setBalanceStatus(message, kind = '') {
 function renderConnection() {
   const account = config ? getAccount(config) : { isConnected: false, address: undefined, chainId: undefined }
   const connected = account.isConnected && Boolean(account.address)
-  $('walletState').innerHTML = connected ? '<span class="ok">متصل</span>' : 'غير متصل'
+  $('walletState').classList.toggle('connected', connected)
+  $('walletState').querySelector('span').textContent = connected ? 'متصل' : 'غير متصل'
   $('account').textContent = connected ? account.address : '—'
   $('networkState').textContent = connected
     ? (account.chainId === 1 ? 'Ethereum Mainnet · Chain ID 1' : `شبكة أخرى · Chain ID ${account.chainId ?? '—'}`)
@@ -149,7 +151,7 @@ async function refreshBalances() {
 
   const sequence = ++refreshSequence
   $('refreshBtn').disabled = true
-  setBalanceStatus('جارٍ قراءة أرصدة ETH وUSDC وUSDT وDAI…')
+  setBalanceStatus('جارٍ قراءة أرصدة ETH وUSDC وUSDT وDAI من Ethereum Mainnet…', 'loading')
   try {
     const ethPromise = getBalance(config, { address: account.address, chainId: 1 })
     const tokenPromises = tokens.map((token) => readContract(config, {
@@ -175,28 +177,39 @@ async function refreshBalances() {
 }
 
 $('connectBtn').addEventListener('click', async () => {
+  const button = $('connectBtn')
   try {
-    setStatus('اختر محفظتك من نافذة Reown. الاتصال لا يرسل معاملة ولا يطلب توقيعًا.')
+    button.disabled = true
+    button.textContent = 'جارٍ فتح المحافظ…'
+    setStatus('اختر محفظتك من نافذة Reown. الاتصال لا يرسل معاملة ولا يطلب توقيعًا.', 'loading')
     const walletKit = await initializeWalletKit()
     await walletKit.open({ view: 'Connect' })
     if (!getAccount(config).isConnected) setStatus('لم يتم ربط محفظة. يمكنك المحاولة مجددًا في أي وقت.')
   } catch (error) {
     setStatus(`تعذر فتح قائمة المحافظ: ${error?.message || 'خطأ غير معروف'}`, 'error')
+  } finally {
+    button.disabled = false
+    button.innerHTML = '<span aria-hidden="true">↗</span> ربط المحفظة'
   }
 })
 
 $('disconnectBtn').addEventListener('click', async () => {
+  const button = $('disconnectBtn')
   try {
+    button.disabled = true
+    setStatus('جارٍ فصل الاتصال…', 'loading')
     await disconnect(config)
     refreshSequence += 1
     renderConnection()
     setStatus('تم فصل المحفظة من الموقع.')
   } catch (error) {
     setStatus(`تعذر فصل المحفظة: ${error?.message || 'خطأ غير معروف'}`, 'error')
+  } finally {
+    button.disabled = false
   }
 })
 
-$('refreshBtn').addEventListener('click', refreshBalances)
+$('refreshBtn').addEventListener('click', () => refreshBalances())
 
 renderConnection()
 
