@@ -14,7 +14,7 @@ h1{font-size:clamp(28px,5vw,42px);margin:10px 0}p{color:var(--muted);line-height
 <header class="top"><div class="brand">ABOHIBA <span style="color:var(--accent)">WEB3</span></div><div class="pill">Ethereum Mainnet · Chain ID 1</div></header>
 <section><div class="pill">شفافية أولاً · لا توجد معاملات تلقائية</div><h1>اتصال واضح وآمن بالعقد</h1><p>اربط محفظتك لقراءة معلومات العقد. لن يطلب هذا الموقع موافقة توكنات أو يرسل معاملة عند الاتصال فقط.</p></section>
 <section class="panel">
-<div class="row"><div><div class="label">حالة المحفظة</div><div id="walletState">غير متصل</div></div><button class="btn" id="connectBtn">ربط MetaMask</button></div>
+<div class="row"><div><div class="label">حالة المحفظة</div><div id="walletState">غير متصل</div></div><button class="btn" id="connectBtn">ربط المحفظة</button></div>
 <div class="grid" style="margin-top:20px"><div><div class="label">عنوان المحفظة المتصلة</div><div class="value" id="account">—</div></div><div><div class="label">الشبكة الحالية</div><div id="networkState">غير متصل</div></div><div><div class="label">مالك العقد (قراءة فقط)</div><div class="value" id="owner">اضغط «قراءة المالك»</div></div></div>
 <div class="row" style="margin-top:18px"><button class="btn secondary" id="ownerBtn">قراءة المالك</button><button class="btn secondary" id="etherscanBtn">فتح العقد في Etherscan</button></div>
 <div class="status" id="status" role="status">جاهز. ربط المحفظة لا يوقّع معاملة ولا يمنح صلاحية على التوكنات.</div>
@@ -30,7 +30,8 @@ h1{font-size:clamp(28px,5vw,42px);margin:10px 0}p{color:var(--muted);line-height
 <div class="grid" style="margin-top:16px"><div><div class="label">رصيد العقد (Pool)</div><div class="value" id="poolBalance">—</div></div><div><div class="label">رصيد محفظة المصدر</div><div class="value" id="sourceBalance">—</div></div><div><div class="label">الموافقة الحالية للعقد</div><div class="value" id="sourceAllowance">—</div></div></div>
 <div class="status" id="balanceStatus" role="status">أدخل عنوان توكن ERC-20 لبدء القراءة.</div>
 <label class="small" style="display:flex;gap:9px;align-items:flex-start;margin-top:14px;color:var(--muted)"><input id="pullConsent" type="checkbox" style="margin-top:4px"><span>أؤكد أن محفظة المصدر تخصني أو أن لدي تفويضًا صريحًا عليها، وأفهم أن العقد يحاول نقل كامل رصيد التوكن المتاح فيها.</span></label>
-<div class="row" style="margin-top:14px"><button class="btn" id="pullBtn" disabled>تنفيذ pullBalance</button><span class="small" id="pullOwnerState">يتطلب اتصال مالك العقد على Ethereum Mainnet.</span></div>
+<p class="small warn" style="padding:12px;border-radius:10px">بعد الفحص، قد تطلب المحفظة توقيع معاملة تنقل كامل رصيد هذا التوكن من عنوان المصدر. وجهة التحويل غير متحققة من مصدر عقد موثق؛ لا توقّع قبل التحقق منها.</p>
+<div class="row" style="margin-top:14px"><button class="btn" id="pullBtn" disabled>مراجعة معاملة نقل كامل الرصيد في المحفظة</button><span class="small" id="pullOwnerState">يتطلب اتصال مالك العقد على Ethereum Mainnet.</span></div>
 <div class="small value" id="txResult" style="margin-top:12px"></div>
 <a id="txLink" class="small" hidden target="_blank" rel="noopener noreferrer">عرض المعاملة في Etherscan</a>
 </section>
