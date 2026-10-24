@@ -54,7 +54,7 @@ const $=id=>document.getElementById(id);
 function status(msg,kind=""){const el=$("status");el.textContent=msg;el.className="status"+(kind?" "+kind:"")}
 function pullStatus(msg,kind=""){const el=$("balanceStatus");el.textContent=msg;el.className="status"+(kind?" "+kind:"")}
 function updatePullButton(){
- const allowed=Boolean(preparedPull&&$("pullConsent").checked&&!pullBusy);
+ const allowed=false; // Public deployment: keep asset-moving action disabled until verified source and destination are confirmed.
  $("pullBtn").disabled=!allowed;
  if(!preparedPull)$("pullOwnerState").textContent=walletProvider&&walletSigner&&!walletIsOwner?"الحساب المتصل ليس مالك العقد.":walletProvider&&walletSigner&&walletIsOwner?"مالك العقد متصل؛ افحص التوكن ومحفظة المصدر لتجهيز العملية.":"يتطلب اتصال مالك العقد، وشبكة Ethereum Mainnet، ورصيدًا وموافقة كافيين.";
  else $("pullOwnerState").textContent="تم التحقق من المالك والشبكة والرصيد والموافقة. راجع المبلغ قبل المتابعة.";
