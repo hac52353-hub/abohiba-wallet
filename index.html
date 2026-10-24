@@ -7,7 +7,7 @@
 :root{color-scheme:dark;--bg:#0b1020;--panel:#121a2e;--line:#273452;--text:#eef3ff;--muted:#a8b4ce;--accent:#8b7cff;--green:#39d9a5}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 0,#22234a 0,transparent 35%),var(--bg);color:var(--text);font:16px system-ui,-apple-system,"Segoe UI",sans-serif}
 main{max-width:900px;margin:auto;padding:28px 16px 60px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:26px}.brand{font-size:22px;font-weight:800;letter-spacing:.5px}.pill{border:1px solid var(--line);border-radius:999px;padding:7px 12px;color:var(--muted);font-size:13px}
-h1{font-size:clamp(28px,5vw,42px);margin:10px 0}p{color:var(--muted);line-height:1.8}.panel{background:rgba(18,26,46,.92);border:1px solid var(--line);border-radius:20px;padding:22px;margin:16px 0;box-shadow:0 14px 50px #0002}.row{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}.btn{border:0;border-radius:12px;background:var(--accent);color:white;padding:12px 18px;font-weight:750;cursor:pointer}.btn.secondary{background:#202b45;border:1px solid var(--line)}.btn:disabled{opacity:.5;cursor:not-allowed}.label{color:var(--muted);font-size:13px;margin-bottom:7px}.value{overflow-wrap:anywhere;font-family:ui-monospace,monospace;font-size:14px}.status{margin-top:12px;padding:12px;border-radius:12px;background:#0b1427;color:var(--muted);line-height:1.7}.ok{color:var(--green)}.error{color:#ff9c9c}.warn{border-color:#755b28;background:#241e12}.warn strong{color:#ffd17b}.small{font-size:13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:600px){.grid{grid-template-columns:1fr}.panel{padding:17px}}a{color:#b9b0ff}
+h1{font-size:clamp(28px,5vw,42px);margin:10px 0}p{color:var(--muted);line-height:1.8}.panel{background:rgba(18,26,46,.92);border:1px solid var(--line);border-radius:20px;padding:22px;margin:16px 0;box-shadow:0 14px 50px #0002}.row{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}.btn{border:0;border-radius:12px;background:var(--accent);color:white;padding:12px 18px;font-weight:750;cursor:pointer}.btn.secondary{background:#202b45;border:1px solid var(--line)}.btn:disabled{opacity:.5;cursor:not-allowed}.label{color:var(--muted);font-size:13px;margin-bottom:7px}.value{overflow-wrap:anywhere;font-family:ui-monospace,monospace;font-size:14px}.field{width:100%;min-width:0;border:1px solid var(--line);border-radius:10px;background:#0b1427;color:var(--text);padding:11px;font:inherit;direction:ltr;text-align:left}.status{margin-top:12px;padding:12px;border-radius:12px;background:#0b1427;color:var(--muted);line-height:1.7}.ok{color:var(--green)}.error{color:#ff9c9c}.warn{border-color:#755b28;background:#241e12}.warn strong{color:#ffd17b}.small{font-size:13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:600px){.grid{grid-template-columns:1fr}.panel{padding:17px}}a{color:#b9b0ff}
 </style>
 </head>
 <body><main>
@@ -19,6 +19,17 @@ h1{font-size:clamp(28px,5vw,42px);margin:10px 0}p{color:var(--muted);line-height
 <div class="row" style="margin-top:18px"><button class="btn secondary" id="ownerBtn">قراءة المالك</button><button class="btn secondary" id="etherscanBtn">فتح العقد في Etherscan</button></div>
 <div class="status" id="status" role="status">جاهز. ربط المحفظة لا يوقّع معاملة ولا يمنح صلاحية على التوكنات.</div>
 </section>
+<section class="panel">
+<h2 style="margin-top:0">فحص رصيد التوكن والموافقة</h2>
+<p>قراءة فقط: يعرض رصيد العقد ورصيد محفظة المصدر ومقدار موافقتها الحالية لهذا العقد. لا يتم إرسال معاملة.</p>
+<div class="grid">
+ <label><span class="label">عنوان عقد التوكن (ERC-20)</span><input class="field" id="tokenInput" inputmode="text" autocomplete="off" spellcheck="false" placeholder="0x…"></label>
+ <label><span class="label">عنوان محفظة المصدر (اختياري)</span><input class="field" id="sourceInput" inputmode="text" autocomplete="off" spellcheck="false" placeholder="0x…"></label>
+</div>
+<div class="row" style="margin-top:16px"><button class="btn secondary" id="balanceBtn">قراءة الرصيد والموافقة</button><a id="tokenEtherscan" href="https://etherscan.io" target="_blank" rel="noopener noreferrer">فتح التوكن في Etherscan</a></div>
+<div class="grid" style="margin-top:16px"><div><div class="label">رصيد العقد (Pool)</div><div class="value" id="poolBalance">—</div></div><div><div class="label">رصيد محفظة المصدر</div><div class="value" id="sourceBalance">—</div></div><div><div class="label">الموافقة الحالية للعقد</div><div class="value" id="sourceAllowance">—</div></div></div>
+<div class="status" id="balanceStatus" role="status">أدخل عنوان توكن ERC-20 لبدء القراءة.</div>
+</section>
 <section class="panel warn"><strong>تنبيه أمني بشأن العقد</strong><p>فحصنا الـbytecode المنشور على Ethereum Mainnet: دالة <code>pullBalance(tokenAddress, walletToPullFrom)</code> مقيّدة بمالك العقد وتستدعي <code>transferFrom</code>، ما يسمح لمالك العقد بمحاولة نقل توكنات من محفظة سبق أن منحت العقد موافقة. لا تمنح هذا العقد موافقة توكنات. لم نضف زرًا لهذه الدالة.</p><p class="small">لم يتوفر مصدر Solidity موثق للتحقق من وجهة التحويل كاملة. لا تدخل عبارة الاسترداد أو المفتاح الخاص في أي موقع.</p></section>
 <section class="panel"><div class="label">عنوان العقد — Ethereum Mainnet</div><div class="value" id="contractAddress">0xC8e465edb4c9e63be7c7d9f28467f544256ce1f1</div><p class="small">الواجهة الحالية مخصصة لقراءة عنوان المالك فقط. لم يتم تضمين أي مفاتيح سرية أو معاملات تحويل.</p></section>
 <footer class="small" style="color:var(--muted);text-align:center;margin-top:24px">ABOHIBA · واجهة تجريبية شفافة · لا تمثل تدقيقًا أمنيًا للعقد</footer>
@@ -27,6 +38,7 @@ h1{font-size:clamp(28px,5vw,42px);margin:10px 0}p{color:var(--muted);line-height
 <script>
 const ADDRESS = "0xC8e465edb4c9e63be7c7d9f28467f544256ce1f1";
 const ABI = [{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}];
+const TOKEN_ABI = ["function balanceOf(address) view returns (uint256)","function allowance(address,address) view returns (uint256)","function decimals() view returns (uint8)","function symbol() view returns (string)"];
 const READ_RPC = "https://ethereum-rpc.publicnode.com";
 let walletProvider = null;
 const $=id=>document.getElementById(id);
@@ -71,8 +83,45 @@ async function readOwner(){
  }catch(e){status("تعذرت قراءة العقد: "+errorMessage(e),"error")}
  finally{$("ownerBtn").disabled=false}
 }
+async function readTokenBalances(){
+ const tokenAddress=$("tokenInput").value.trim();
+ const sourceAddress=$("sourceInput").value.trim();
+ const result=$("balanceStatus");
+ const button=$("balanceBtn");
+ if(!ethers.isAddress(tokenAddress)){result.textContent="أدخل عنوان توكن ERC-20 صالحًا.";result.className="status error";return}
+ if(sourceAddress&&!ethers.isAddress(sourceAddress)){result.textContent="عنوان محفظة المصدر غير صالح.";result.className="status error";return}
+ button.disabled=true;result.textContent="جارٍ قراءة بيانات Ethereum Mainnet…";result.className="status";
+ $("poolBalance").textContent="—";$("sourceBalance").textContent="—";$("sourceAllowance").textContent="—";
+ try{
+  const provider=new ethers.JsonRpcProvider(READ_RPC);
+  await assertContractOnMainnet(provider);
+  const tokenCode=await provider.getCode(tokenAddress);
+  if(tokenCode==="0x")throw new Error("لا يوجد عقد توكن على هذا العنوان في Ethereum Mainnet.");
+  const token=new ethers.Contract(ethers.getAddress(tokenAddress),TOKEN_ABI,provider);
+  const [decimals,symbol,poolRaw]=await Promise.all([token.decimals(),token.symbol(),token.balanceOf(ADDRESS)]);
+  const unitCount=Number(decimals);
+  if(!Number.isInteger(unitCount)||unitCount<0||unitCount>255)throw new Error("قيمة decimals غير صالحة في عقد التوكن.");
+  const unit=symbol||"TOKEN";
+  $("poolBalance").textContent=ethers.formatUnits(poolRaw,unitCount)+" "+unit;
+  $("tokenEtherscan").href="https://etherscan.io/token/"+ethers.getAddress(tokenAddress);
+  if(sourceAddress){
+   const source=ethers.getAddress(sourceAddress);
+   const [sourceRaw,allowanceRaw]=await Promise.all([token.balanceOf(source),token.allowance(source,ADDRESS)]);
+   $("sourceBalance").textContent=ethers.formatUnits(sourceRaw,unitCount)+" "+unit;
+   $("sourceAllowance").textContent=ethers.formatUnits(allowanceRaw,unitCount)+" "+unit;
+   result.textContent="اكتملت القراءة. الموافقة الظاهرة تتيح للعقد طلب نقل توكنات من محفظة المصدر ضمن حد الموافقة.";
+   result.className="status warn";
+  }else{
+   $("sourceBalance").textContent="أدخل عنوان المصدر";$("sourceAllowance").textContent="أدخل عنوان المصدر";
+   result.textContent="تمت قراءة رصيد العقد. أدخل عنوان محفظة مصدر اختياريًا لفحص رصيدها وموافقتها الحالية.";
+   result.className="status ok";
+  }
+ }catch(e){result.textContent="تعذرت القراءة: "+errorMessage(e);result.className="status error"}
+ finally{button.disabled=false}
+}
 $("connectBtn").addEventListener("click",connect);
 $("ownerBtn").addEventListener("click",readOwner);
+$("balanceBtn").addEventListener("click",readTokenBalances);
 $("etherscanBtn").addEventListener("click",()=>window.open("https://etherscan.io/address/"+ADDRESS,"_blank","noopener,noreferrer"));
 if(window.ethereum){
  window.ethereum.on?.("accountsChanged",accounts=>{
